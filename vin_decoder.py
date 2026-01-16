@@ -95,37 +95,37 @@ Example format: 1HGBH41JXMN109186"""
                 'error': f'Invalid VIN format detected: {vin}. Please try again with a clearer photo.'
             }), 400
         
-        # Step 2: Decode VIN with NHTSA API
-        nhtsa_url = f'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVin/{vin}?format=json'
-        nhtsa_response = requests.get(nhtsa_url)
-        nhtsa_data = nhtsa_response.json()
-        
-        # Extract key details
-        details = {}
-        fields_to_show = [
-            'Make',
-            'Model',
-            'ModelYear',
-            'VehicleType',
-            'BodyClass',
-            'EngineNumberofCylinders',
-            'DisplacementL',
-            'FuelTypePrimary',
-            'Transmission',
-            'DriveType',
-            'PlantCity',
-            'PlantCountry',
-            'Manufacturer'
-        ]
-        
-        for item in nhtsa_data.get('Results', []):
-            if item['Variable'] in fields_to_show and item['Value']:
-                # Clean up label
-                label = item['Variable'].replace('Numberof', '').replace('Primary', '')
-                # Add spaces before capitals
-                import re
-                label = re.sub(r'([A-Z])', r' \1', label).strip()
-                details[label] = item['Value']
+        # Step 2: Decode VIN with NHTSA Extended API
+nhtsa_url = f'https://vpic.nhtsa.dot.gov/api/vehicles/DecodeVinValuesExtended/{vin}?format=json'
+nhtsa_response = requests.get(nhtsa_url)
+vin_data = nhtsa_response.json().get('Results', [{}])[0]
+
+# Extract structured fields
+make = vin_data.get('Make', 'Unknown')
+model = vin_data.get('Model', 'Unknown')
+year = vin_data.get('ModelYear', 'Unknown')
+drive_type = vin_data.get('DriveType', 'Unknown')
+engine = vin_data.get('DisplacementL', 'Unknown') or vin_data.get('EngineModel', 'Unknown')
+manufactured_in = f"{vin_data.get('PlantCity', '')} {vin_data.get('PlantCountry', '')}".strip()
+vehicle_type = vin_data.get('VehicleType', 'Unknown')
+body_class = vin_data.get('BodyClass', 'Unknown')
+
+# Calculate vehicle age
+from datetime import datetime
+current_year = datetime.now().year
+age = f"{current_year - int(year)} Years" if year.isdigit() else "Unknown"
+
+details = {
+    "Make": make,
+    "Model": model,
+    "Year": year,
+    "Drive Type": drive_type,
+    "Engine (L)": engine,
+    "Manufactured In": manufactured_in or "Unknown",
+    "Vehicle Type": vehicle_type,
+    "Body Class": body_class,
+    "Age": age
+}
         
         return jsonify({
             'success': True,
