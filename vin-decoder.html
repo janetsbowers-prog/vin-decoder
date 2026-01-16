@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIN Decoder - AI Vision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --success: #10b981;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #cbd5e1;
+            --border: #475569;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .upload-section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            border: 2px dashed var(--border);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: transform 0.2s ease;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .preview-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .preview-section.active {
+            display: block;
+        }
+
+        .preview-img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            background: var(--bg-secondary);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+        }
+
+        .results-section.active {
+            display: block;
+        }
+
+        .vin-display {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--success);
+        }
+
+        .vin-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .vin-number {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.1em;
+            color: var(--success);
+        }
+
+        .vehicle-info {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .reset-btn {
+            width: 100%;
+            background: var(--bg-tertiary);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: background 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: var(--border);
+        }
+
+        .error-message {
+            display: none;
+            background: #dc2626;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .upload-section { padding: 2rem; }
+            .vin-number { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚗 VIN DECODER</h1>
+            <p class="subtitle">AI-Powered Vehicle Identification</p>
+        </header>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-icon">📷</div>
+            <p class="upload-text">Take a photo of the VIN plate</p>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                Upload Photo
+            </button>
+            <input type="file" id="fileInput" accept="image/*" capture="environment">
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <img id="previewImg" class="preview-img" alt="VIN Preview">
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Reading VIN and decoding vehicle...</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="vin-display">
+                <div class="vin-label">Vehicle Identification Number</div>
+                <div class="vin-number" id="vinNumber">-</div>
+            </div>
+
+            <div class="vehicle-info">
+                <h2 style="margin-bottom: 1.5rem; color: var(--text-primary);">Vehicle Details</h2>
+                <div class="info-grid" id="vehicleDetails"></div>
+            </div>
+
+            <button class="reset-btn" onclick="reset()">Decode Another VIN</button>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadSection = document.getElementById('uploadSection');
+        const previewSection = document.getElementById('previewSection');
+        const previewImg = document.getElementById('previewImg');
+        const loading = document.getElementById('loading');
+        const resultsSection = document.getElementById('resultsSection');
+        const errorMessage = document.getElementById('errorMessage');
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                uploadSection.style.display = 'none';
+                previewSection.classList.add('active');
+                loading.classList.add('active');
+                errorMessage.classList.remove('active');
+                
+                processImage(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processImage(imageData) {
+            try {
+                // Call our Flask backend
+                const response = await fetch('/api/decode-vin', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: imageData })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Server error: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                console.log('Server response:', result);
+                
+                if (result.success) {
+                    displayResults(result.vin, result.details);
+                } else {
+                    throw new Error(result.error || 'Failed to decode VIN');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to decode VIN: ' + error.message + '\n\nMake sure the app is deployed to Heroku!');
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayResults(vin, details) {
+            loading.classList.remove('active');
+            
+            // Display VIN
+            document.getElementById('vinNumber').textContent = vin;
+            
+            // Display details
+            const detailsGrid = document.getElementById('vehicleDetails');
+            detailsGrid.innerHTML = Object.entries(details)
+                .filter(([key, value]) => value && value !== 'Not Applicable')
+                .map(([key, value]) => `
+                    <div class="info-item">
+                        <div class="info-label">${key}</div>
+                        <div class="info-value">${value}</div>
+                    </div>
+                `).join('');
+            
+            resultsSection.classList.add('active');
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('active');
+        }
+
+        function reset() {
+            uploadSection.style.display = 'block';
+            previewSection.classList.remove('active');
+            resultsSection.classList.remove('active');
+            errorMessage.classList.remove('active');
+            fileInput.value = '';
+        }
+    </script>
+</body>
+</html>
