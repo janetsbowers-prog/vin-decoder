@@ -9,71 +9,58 @@
 
 <style>
 :root {
-  --italian-red:#b71c1c;
-  --italian-green:#1b7d2b;
-  --italian-gold:#f39c12;
+  --italian-red: #b71c1c;
+  --italian-green: #1b7d2b;
+  --italian-gold: #f39c12;
 }
 
-/* ----- Layout ----- */
-body {font-family:'Inter',sans-serif;background:linear-gradient(145deg,#f8fafc,#f0f4f8);
-  color:#333;margin:0;display:flex;flex-direction:column;align-items:center;min-height:100vh;}
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(145deg,#f8fafc,#f0f4f8);
+  color:#333;
+  margin:0;display:flex;flex-direction:column;align-items:center;min-height:100vh;
+}
 
-/* ----- Title ----- */
+/* --- TITLE --- */
 #appTitle{font-family:'Cinzel Decorative',cursive;text-align:center;margin-top:25px;line-height:1.1;position:relative;}
 #appTitle::after{content:"";display:block;height:6px;width:80px;margin:8px auto 0 auto;border-radius:4px;
-  background:linear-gradient(90deg,var(--italian-green),white,var(--italian-red));}
+ background:linear-gradient(90deg,var(--italian-green),white,var(--italian-red));}
 .brand-line{display:inline-block;background:linear-gradient(135deg,var(--italian-red),var(--italian-gold));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-@media(min-width:600px){.brand-line{font-size:3rem}}@media(max-width:599px){.brand-line{font-size:2.1rem}}
-#appSubtitle{text-align:center;font-size:1.1rem;color:#555;margin-bottom:20px;font-style:italic;}
+ -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+@media(min-width:600px){.brand-line{font-size:3rem}}
+@media(max-width:599px){.brand-line{font-size:2.1rem}}
+#appSubtitle{text-align:center;font-size:1.1rem;color:#555;font-style:italic;margin-bottom:20px;}
 
-/* ----- Panels ----- */
+/* --- PANELS --- */
 .panel{background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.05);
-  padding:20px 30px;width:90%;max-width:700px;margin-top:25px;}
-
+ padding:20px 30px;width:90%;max-width:700px;margin-top:25px;}
 #fileInput,#carFileInput{display:none;}
 
-/* Upload button */
-#customUpload{display:inline-block;background-color:var(--italian-red);color:#fff;font-size:1.05rem;
-  padding:12px 22px;border-radius:6px;cursor:pointer;transition:background-color .25s,transform .15s;
-  font-weight:600;}
-#customUpload:hover{background-color:#8e1515;transform:translateY(-1px);}
-
-/* Previews */
-#previewSection{display:none;flex-direction:column;align-items:center;}
-#previewSection.active{display:flex;}
-#previewImg,#carPreviewImg{max-width:100%;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.15);
-  margin-bottom:12px;max-height:300px;object-fit:cover;}
-#loading{font-weight:bold;color:var(--italian-red);display:none;}
-#loading.active{display:block;}
-
-/* Buttons */
-button{margin-top:15px;border:none;color:white;padding:10px 18px;font-size:1em;border-radius:5px;
-  cursor:pointer;transition:background-color .2s;}
-.primary-btn{background-color:var(--italian-red);}
-.primary-btn:hover{background-color:#8e1515;}
-.secondary-btn{background-color:var(--italian-green);}
+/* CUSTOM BUTTONS */
+.upload-btn{display:inline-block;background-color:var(--italian-red);color:#fff;font-size:1.05rem;
+ padding:12px 22px;border-radius:6px;cursor:pointer;font-weight:600;}
+.upload-btn:hover{background-color:#8e1515;}
+.secondary-btn{background-color:var(--italian-green);border:none;color:white;padding:10px 18px;
+ font-size:1em;border-radius:5px;cursor:pointer;margin:10px 5px;}
 .secondary-btn:hover{background-color:#15691f;}
-.delete-btn{background:none;border:none;color:#b91c1c;font-size:1.1rem;font-weight:bold;cursor:pointer;margin-left:auto;}
+.delete-btn{background:none;border:none;color:#b91c1c;font-size:1.2rem;font-weight:bold;cursor:pointer;margin-left:auto;}
 .delete-btn:hover{color:#dc2626;}
 
-/* Results */
+/* RESULTS */
+#previewImg,#carImgPreview{max-width:100%;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.15);
+margin-bottom:12px;max-height:280px;object-fit:cover;}
 #vinNumber{font-weight:700;font-size:1.2em;color:var(--italian-red);text-align:center;margin-bottom:10px;}
-#vehicleDetails{display:flex;flex-wrap:wrap;gap:10px;}
-.info-item{background:#f9fafb;border-radius:6px;padding:10px 15px;min-width:200px;border-left:4px solid var(--italian-red);}
-.info-label{font-weight:600;}
-.price-range{margin-top:15px;font-weight:700;font-size:1.05em;color:#065f46;background:#d1fae5;
-  padding:10px;border-radius:6px;width:100%;text-align:center;}
-#errorMessage{display:none;margin-top:20px;background:#fee2e2;padding:15px 20px;border-radius:6px;
-  color:#b91c1c;white-space:pre-line;}
+.info-item{background:#f9fafb;border-radius:6px;padding:10px 15px;margin:5px 8px;display:inline-block;}
+.price-range{background:#d1fae5;padding:8px;border-radius:6px;text-align:center;font-weight:600;color:#065f46;}
+#errorMessage{display:none;background:#fee2e2;color:#b91c1c;border-radius:6px;padding:15px 20px;margin-top:20px;}
 #errorMessage.active{display:block;}
 
-/* History */
+/* HISTORY */
 #historyList{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
-.history-item{cursor:pointer;padding:10px 15px;border-radius:6px;background:#f9fafb;
-  border-left:4px solid var(--italian-red);display:flex;align-items:center;gap:10px;}
+.history-item{display:flex;align-items:center;background:#f9fafb;border-left:4px solid var(--italian-red);
+border-radius:6px;padding:10px 15px;gap:10px;}
 .history-thumb{width:60px;height:45px;border-radius:4px;object-fit:cover;}
-.history-text{flex:1;display:flex;flex-direction:column;}
+.history-text{flex:1;}
 .history-vin{font-weight:700;}
 .history-meta{font-size:.9em;color:#6b7280;}
 </style>
@@ -81,211 +68,223 @@ button{margin-top:15px;border:none;color:white;padding:10px 18px;font-size:1em;b
 <body>
 
 <h1 id="appTitle"><span class="brand-line">Yanni</span><br><span class="brand-line">Pricing</span></h1>
-<div id="appSubtitle">Decodifica del VIN e prezzi stimati dei veicoli</div>
+<div id="appSubtitle">Decodifica del VIN e prezzi stimati dei veicoli</div>
 
-<!-- Upload VIN -->
-<div id="uploadSection" class="panel">
-  <p>Upload an image containing a Vehicle Identification Number (VIN):</p>
-  <label id="customUpload">📸 Upload VIN image<input type="file" id="fileInput" accept="image/*"></label>
+<!-- 1️⃣ Upload VIN -->
+<div id="uploadSection" class="panel" style="text-align:center;">
+  <p>📸 Upload a VIN picture (file or camera):</p>
+  <label class="upload-btn">Upload VIN Image
+    <input type="file" id="fileInput" accept="image/*">
+  </label>
 </div>
 
-<!-- Preview -->
-<div id="previewSection" class="panel">
+<!-- 2️⃣ Result -->
+<div id="resultsSection" class="panel" style="display:none;">
   <img id="previewImg" alt="VIN preview">
-  <div id="loading">Processing VIN... ⏳</div>
-</div>
-
-<!-- Results -->
-<div id="resultsSection" class="panel">
   <div id="vinNumber"></div>
   <div id="vehicleDetails"></div>
-  <div id="carUploadPrompt" style="display:none;text-align:center;margin-top:20px;">
-    <p>Would you like to add a photo of this car?</p>
-    <label id="customCarUpload" class="secondary-btn" style="padding:8px 16px;">
-      🚗 Upload car photo
+
+  <!-- Car prompt -->
+  <div id="carOption" style="text-align:center;display:none;margin-top:15px;">
+    <p>Do you want to add a photo of this car?</p>
+    <button class="secondary-btn" onclick="showCarUpload(true)">Yes</button>
+    <button class="secondary-btn" onclick="showCarUpload(false)">No</button>
+  </div>
+
+  <!-- Car upload -->
+  <div id="carUpload" style="display:none;text-align:center;">
+    <label class="secondary-btn">🚗 Upload Car Photo
       <input type="file" id="carFileInput" accept="image/*">
     </label>
+    <img id="carImgPreview" style="display:none;" alt="Car preview">
   </div>
-<button id="decodeAnotherBtn" class="secondary-btn" style="display:none;" onclick="reset()">🔁 Decode another VIN</button></div>
 
-<!-- Error -->
+  <button id="scanAnotherBtn" class="secondary-btn" style="display:none;" onclick="reset()">🔁 Scan another VIN</button>
+</div>
+
+<!-- ERROR -->
 <div id="errorMessage"></div>
 
-<!-- History -->
+<!-- 3️⃣ History -->
 <div id="historySection" class="panel">
-  <h2>📜 Scan History</h2>
+  <h2>📜 Scan History</h2>
   <div id="historyList">No previous scans yet.</div>
 </div>
 
 <script>
+let currentVIN=null;
+let currentDetails=null;
+let currentCarImg=null;
+
+const uploadSection=document.getElementById('uploadSection');
 const fileInput=document.getElementById('fileInput');
 const carFileInput=document.getElementById('carFileInput');
-const uploadSection=document.getElementById('uploadSection');
-const previewSection=document.getElementById('previewSection');
 const previewImg=document.getElementById('previewImg');
-const loading=document.getElementById('loading');
+const carImgPreview=document.getElementById('carImgPreview');
 const resultsSection=document.getElementById('resultsSection');
-const errorMessage=document.getElementById('errorMessage');
+const vinNumber=document.getElementById('vinNumber');
+const vehicleDetails=document.getElementById('vehicleDetails');
+const carOption=document.getElementById('carOption');
+const carUpload=document.getElementById('carUpload');
+const scanAnotherBtn=document.getElementById('scanAnotherBtn');
 const historyList=document.getElementById('historyList');
-const decodeAnotherBtn=document.getElementById('decodeAnotherBtn');
-const carUploadPrompt=document.getElementById('carUploadPrompt');
-let currentVIN=null;
+const errorMessage=document.getElementById('errorMessage');
 
-/* ---------- Image handling ---------- */
+/* UPLOAD VIN */
 fileInput.addEventListener('change',e=>{
   const file=e.target.files[0];
-  if(file)handleFile(file);
+  if(file)readVINImage(file);
 });
+
+function readVINImage(file){
+  const r=new FileReader();
+  r.onload=e=>{
+    const imgData=e.target.result;
+    previewImg.src=imgData;
+    previewImg.style.display="block";
+    decodeVIN(imgData);
+  };
+  r.readAsDataURL(file);
+}
+
+/* SIMULATE / CALL ACTUAL API */
+async function decodeVIN(imgData){
+  try{
+    // 🔹 call your real endpoint here
+    // const res=await fetch('/api/decode-vin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:imgData})});
+    // const data=await res.json();
+
+    // Mock result for demo
+    const mockVIN="TESTVIN"+Math.floor(Math.random()*100000);
+    const data={success:true,vin:mockVIN,details:{Make:'FIAT',Model:'500',Year:'2021',Color:'Red', 'Estimated Used Price':'$14,500'}};
+
+    if(!data.success) throw new Error(data.error || 'Failed to decode VIN');
+    handleDecoded(data.vin,data.details);
+  }catch(err){showError(err.message);}
+}
+
+/* AFTER DECODE */
+function handleDecoded(vin,details){
+  currentVIN=vin;
+  currentDetails=details;
+  currentCarImg=null;
+
+  // Check for existing VIN
+  const history=getHistory();
+  const existingIdx=history.findIndex(h=>h.vin===vin);
+  if(existingIdx>-1){
+    if(!confirm('VIN already exists in history. Replace it?')){reset();return;}
+    history.splice(existingIdx,1);
+    saveHistory(history);
+  }
+
+  // Display results
+  uploadSection.style.display='none';
+  resultsSection.style.display='block';
+  vinNumber.textContent=vin;
+
+  vehicleDetails.innerHTML=Object.entries(details)
+   .map(([k,v])=>`<div class="info-item"><strong>${k}: </strong>${v}</div>`).join('');
+
+  carOption.style.display='block';
+  scanAnotherBtn.style.display='none';
+}
+
+/* ASK about car */
+function showCarUpload(wants){
+  carOption.style.display='none';
+  if(wants){
+    carUpload.style.display='block';
+  }else{
+    finalizeScan('No pic given');
+  }
+}
+
 carFileInput.addEventListener('change',e=>{
   const file=e.target.files[0];
-  if(!file||!currentVIN)return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    updateHistoryCarPhoto(currentVIN,reader.result);
-    renderHistory();
-    alert('Car photo added to '+currentVIN+' in history.');
-  };
-  reader.readAsDataURL(file);
+  if(file){
+    const reader=new FileReader();
+    reader.onload=f=>{
+      currentCarImg=f.target.result;
+      carImgPreview.src=currentCarImg;
+      carImgPreview.style.display='block';
+      finalizeScan(currentCarImg);
+    };
+    reader.readAsDataURL(file);
+  }
 });
 
-function handleFile(file){
-  const reader=new FileReader();
-  reader.onload=async e=>{
-    const data=e.target.result;
-    previewImg.src=data;
-    uploadSection.style.display='none';
-    previewSection.classList.add('active');
-    loading.classList.add('active');
-    errorMessage.classList.remove('active');
-    const resized=await resizeImageIfNeeded(data);
-    processImage(resized);
-  };
-  reader.readAsDataURL(file);
+/* FINALIZE */
+function finalizeScan(carImgOrNone){
+  saveEntry(currentVIN,currentDetails,carImgOrNone);
+  scanAnotherBtn.style.display='inline-block';
 }
 
-const MAX_IMAGE_BYTES=4.5*1024*1024;
-function resizeImageIfNeeded(dataUrl,maxBytes=MAX_IMAGE_BYTES){
-  return new Promise(resolve=>{
-    const est=Math.ceil((dataUrl.length*3)/4);
-    if(est<=maxBytes)return resolve(dataUrl);
-    const img=new Image();
-    img.onload=()=>{
-      const canvas=document.createElement('canvas');
-      const ctx=canvas.getContext('2d');
-      const scale=Math.sqrt(maxBytes/est);
-      canvas.width=img.width*scale;
-      canvas.height=img.height*scale;
-      ctx.drawImage(img,0,0,canvas.width,canvas.height);
-      resolve(canvas.toDataURL('image/jpeg',0.7));
-    };
-    img.onerror=()=>resolve(dataUrl); img.src=dataUrl;
-  });
+/* HISTORY FUNCTIONS */
+function getHistory(){
+  return JSON.parse(localStorage.getItem('vinHistory')||'[]');
 }
-
-async function processImage(imageData){
-  try{
-    const response=await fetch('/api/decode-vin',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({image:imageData})
-    });
-    if(!response.ok){
-      const err=await response.json(); throw new Error(err.error||`Server error: ${response.status}`);
-    }
-    const result=await response.json();
-    if(result.success){
-      displayResults(result.vin,result.details);
-      saveToHistory(result.vin,result.details);
-    }else throw new Error(result.error||'Failed to decode VIN');
-  }catch(err){
-    showError('Failed to decode VIN: '+err.message);
-    loading.classList.remove('active');
-  }
+function saveHistory(arr){
+  localStorage.setItem('vinHistory',JSON.stringify(arr));
 }
-
-/* ---------- Display / History ---------- */
-function displayResults(vin,details){
-  currentVIN=vin;
-  loading.classList.remove('active');
-  document.getElementById('vinNumber').textContent=vin;
-  const grid=document.getElementById('vehicleDetails');
-  grid.innerHTML=Object.entries(details)
-   .filter(([k,v])=>v&&v!=='Not Applicable')
-   .map(([k,v])=>`
-     <div class="info-item">
-       <div class="info-label">${k}</div>
-       <div class="info-value">${v}</div>
-     </div>`).join('');
-  if(details["Estimated Used Price"])
-    grid.insertAdjacentHTML('beforeend',
-      `<div class="price-range">💰 Estimated Used Price: ${details["Estimated Used Price"]}</div>`);
-  resultsSection.classList.add('active');
-  decodeAnotherBtn.style.display='inline-block';
-  carUploadPrompt.style.display='block';
-}
-
-function saveToHistory(vin,details){
-  let history=JSON.parse(localStorage.getItem('vinHistory')||'[]');
-  const existingIndex=history.findIndex(i=>i.vin===vin);
-  if(existingIndex>-1){
-    const replace=confirm(`VIN ${vin} already exists in history.\nDo you want to replace it?`);
-    if(replace) history.splice(existingIndex,1); else return;
-  }
-  history.unshift({vin,details,timestamp:new Date().toLocaleString()});
-  localStorage.setItem('vinHistory',JSON.stringify(history));
+function saveEntry(vin,details,carImg){
+  const h=getHistory();
+  h.unshift({vin,details,carImg, timestamp:new Date().toLocaleString()});
+  saveHistory(h);
   renderHistory();
 }
-
-function updateHistoryCarPhoto(vin,photo){
-  let h=JSON.parse(localStorage.getItem('vinHistory')||'[]');
-  const item=h.find(i=>i.vin===vin);
-  if(item){item.carImg=photo;localStorage.setItem('vinHistory',JSON.stringify(h));}
-}
-
 function renderHistory(){
-  const history=JSON.parse(localStorage.getItem('vinHistory')||'[]');
-  if(!history.length){historyList.innerHTML='No previous scans yet.';return;}
-  historyList.innerHTML=history.map((item,i)=>`
-    <div class="history-item" data-index="${i}">
-      ${item.carImg?`<img src="${item.carImg}" alt="car" class="history-thumb">`:''}
+  const h=getHistory();
+  if(!h.length)return historyList.innerHTML='No previous scans yet.';
+  historyList.innerHTML=h.map((item,i)=>`
+    <div class="history-item" onclick="loadHistory(${i})">
+      ${item.carImg && item.carImg!=='No pic given'
+        ? `<img src="${item.carImg}" class="history-thumb">`
+        : `<div style='width:60px;text-align:center;font-size:0.8em;color:#777;'>No pic given</div>`}
       <div class="history-text">
         <div class="history-vin">${item.vin}</div>
-        <div class="history-meta">${item.details.Make||'Unknown'} – ${item.details.Model||'Unknown'} (${item.timestamp})</div>
+        <div class="history-meta">${item.details.Make||'Unknown'} – ${item.details.Model||'Unknown'} (${item.timestamp})</div>
       </div>
       <button class="delete-btn" onclick="deleteHistory(${i});event.stopPropagation();">×</button>
     </div>`).join('');
 }
-
-function loadFromHistory(i){
-  const h=JSON.parse(localStorage.getItem('vinHistory')||'[]');
+function loadHistory(i){
+  const h=getHistory();
   const item=h[i]; if(!item)return;
-  reset(false);
-  displayResults(item.vin,item.details);
-  if(item.carImg) updateHistoryCarPhoto(item.vin,item.carImg);
+  uploadSection.style.display='none';
+  resultsSection.style.display='block';
+  vinNumber.textContent=item.vin;
+  vehicleDetails.innerHTML=Object.entries(item.details)
+    .map(([k,v])=>`<div class="info-item"><strong>${k}: </strong>${v}</div>`).join('');
+  if(item.carImg && item.carImg!=='No pic given'){
+    carUpload.style.display='block';
+    carImgPreview.src=item.carImg;
+    carImgPreview.style.display='block';
+  }else{
+    carUpload.style.display='none';
+  }
+  scanAnotherBtn.style.display='inline-block';
 }
-
 function deleteHistory(i){
-  if(!confirm('Delete this entry from history?'))return;
-  const h=JSON.parse(localStorage.getItem('vinHistory')||'[]');
-  h.splice(i,1);
-  localStorage.setItem('vinHistory',JSON.stringify(h));
-  renderHistory();
+  if(!confirm('Delete this scan from history?'))return;
+  const h=getHistory(); h.splice(i,1); saveHistory(h); renderHistory();
 }
 
+/* UTIL */
 function showError(msg){
-  errorMessage.textContent=msg;
+  errorMessage.textContent='Error: '+msg;
   errorMessage.classList.add('active');
 }
-
-function reset(clearPreview=true){
+function reset(){
   uploadSection.style.display='block';
-  previewSection.classList.remove('active');
-  resultsSection.classList.remove('active');
-  errorMessage.classList.remove('active');
-  decodeAnotherBtn.style.display='none';
-  carUploadPrompt.style.display='none';
-  if(clearPreview){fileInput.value='';currentVIN=null;}
+  resultsSection.style.display='none';
+  carOption.style.display='none';
+  carUpload.style.display='none';
+  carImgPreview.style.display='none';
+  scanAnotherBtn.style.display='none';
+  fileInput.value=''; carFileInput.value='';
+  currentVIN=null; currentDetails=null; currentCarImg=null;
 }
-
 renderHistory();
 </script>
 </body>
