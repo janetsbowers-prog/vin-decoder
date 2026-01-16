@@ -1,241 +1,390 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yanni Pricing – VIN Decoder</title>
 
-  <!-- ✨ Elegant Italian-style fonts -->
+  <!-- Italian fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
 
   <style>
+    :root {
+      --italian-red: #b71c1c;
+      --italian-green: #1b7d2b;
+      --italian-gold: #f39c12;
+    }
+
     body {
       font-family: 'Playfair Display', serif;
       background: linear-gradient(145deg, #f8fafc, #f0f4f8);
       color: #333;
       margin: 0;
-      padding: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
     }
 
-    /* Big Italian-style app title */
+    /* ---------- Heading ---------- */
     #appTitle {
       font-family: 'Cinzel Decorative', cursive;
-      font-size: 3rem;
-      color: #b71c1c;
-      margin-top: 30px;
-      letter-spacing: 2px;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-      background: linear-gradient(135deg, #c0392b, #e74c3c, #f39c12);
+      text-align: center;
+      margin-top: 25px;
+      line-height: 1.1;
+      position: relative;
+    }
+    #appTitle::after {
+      content: "";
+      display: block;
+      height: 6px;
+      width: 80px;
+      margin: 8px auto 0 auto;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--italian-green), white, var(--italian-red));
+    }
+
+    .brand-line {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--italian-red), var(--italian-gold));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+      letter-spacing: 1px;
+    }
+
+    @media (min-width:600px){
+      .brand-line { font-size:3rem; }
+    }
+    @media (max-width:599px){
+      .brand-line { font-size:2.1rem; }
     }
 
     #appSubtitle {
-      font-size: 1.2rem;
-      color: #444;
-      margin: -5px 0 20px 0;
-      font-style: italic;
+      font-size:1.1rem;
+      color:#555;
+      margin-bottom:20px;
+      font-style:italic;
+      text-align:center;
     }
 
-    /* Container panels */
+    /* ---------- Upload Section ---------- */
     #uploadSection {
-      margin-top: 15px;
-      border: 2px dashed #9ca3af;
-      padding: 35px;
-      border-radius: 12px;
-      text-align: center;
-      background-color: #fff;
-      width: 90%;
-      max-width: 420px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      transition: all 0.25s ease;
+      margin-top:15px;
+      border:2px dashed #9ca3af;
+      padding:35px;
+      border-radius:12px;
+      text-align:center;
+      background-color:#fff;
+      width:90%;
+      max-width:420px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.05);
+      transition:all 0.25s ease;
+    }
+    #uploadSection:hover{
+      transform:translateY(-3px);
+      box-shadow:0 8px 16px rgba(0,0,0,0.1);
     }
 
-    #uploadSection:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    /* Upload button style */
+    #fileInput{ display:none; }
+
+    #customUpload {
+      display:inline-block;
+      background-color:var(--italian-red);
+      color:#fff;
+      font-size:1.05rem;
+      padding:12px 22px;
+      border-radius:6px;
+      cursor:pointer;
+      transition:background-color 0.25s, transform 0.15s;
+      font-weight:600;
+    }
+    #customUpload:hover {
+      background-color:#8e1515;
+      transform:translateY(-1px);
     }
 
-    /* Hide the raw input */
-#fileInput {
-  display: none;
-}
-
-/* Styled label that acts as the upload button */
-#customUpload {
-  display: inline-block;
-  background-color: #b71c1c;
-  color: #fff;
-  font-size: 1.05rem;
-  padding: 12px 22px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.25s, transform 0.15s;
-  font-weight: 600;
-}
-
-#customUpload:hover {
-  background-color: #8e1515;
-  transform: translateY(-1px);
-}
-
-#customUpload:active {
-  background-color: #a32020;
-  transform: translateY(0);
-}
-
-    #previewSection,
-    #resultsSection,
-    #historySection {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      padding: 20px 30px;
-      width: 90%;
-      max-width: 700px;
-      margin-top: 25px;
+    /* ---------- Preview / Results / History Panels ---------- */
+    #previewSection, #resultsSection, #historySection {
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.05);
+      padding:20px 30px;
+      width:90%;
+      max-width:700px;
+      margin-top:25px;
     }
 
-    #previewSection { display: none; flex-direction: column; align-items: center; }
-    #previewSection.active { display: flex; }
+    #previewSection { display:none; flex-direction:column; align-items:center; }
+    #previewSection.active{ display:flex; }
 
-    #previewImg {
-      max-width: 100%;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-      margin-bottom: 15px;
+    #previewImg{
+      max-width:100%;
+      border-radius:8px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.15);
+      margin-bottom:15px;
     }
 
-    #loading { font-weight: bold; color: #d32f2f; display: none; }
-    #loading.active { display: block; }
+    #loading { font-weight:bold; color:var(--italian-red); display:none; }
+    #loading.active{ display:block; }
 
-    #vinNumber {
-      font-weight: 700;
-      font-size: 1.3em;
-      color: #b71c1c;
-      margin-bottom: 10px;
-    }
-
-    #vehicleDetails {
-      display: flex; flex-wrap: wrap; gap: 10px;
-    }
-    .info-item {
-      background-color: #f9fafb;
-      border-radius: 6px;
-      padding: 10px 15px;
-      min-width: 200px;
-      border-left: 4px solid #b71c1c;
+    /* Buttons */
+    button{
+      margin-top:15px;
+      border:none;
+      color:white;
+      padding:10px 18px;
+      font-size:1em;
+      border-radius:5px;
+      cursor:pointer;
+      transition:background-color 0.2s;
     }
 
-    .info-label { font-weight: bold; color: #1f2937; }
-    .info-value { color: #111827; margin-top: 4px; }
+    button.primary-btn{ background-color:var(--italian-red); }
+    button.primary-btn:hover{ background-color:#8e1515; }
+    button.secondary-btn{ background-color:var(--italian-green); }
+    button.secondary-btn:hover{ background-color:#15691f; }
 
-    .price-range {
-      margin-top: 15px;
-      font-weight: bold;
-      font-size: 1.1em;
-      color: #065f46;
-      background-color: #d1fae5;
-      padding: 10px 15px;
-      border-radius: 6px;
-      width: 100%;
-      text-align: center;
+    /* Results grid */
+    #vinNumber{
+      font-weight:700;
+      font-size:1.3em;
+      color:var(--italian-red);
+      margin-bottom:10px;
+      text-align:center;
+    }
+    #vehicleDetails{ display:flex; flex-wrap:wrap; gap:10px; }
+    .info-item{
+      background-color:#f9fafb;
+      border-radius:6px;
+      padding:10px 15px;
+      min-width:200px;
+      border-left:4px solid var(--italian-red);
+    }
+    .info-label{font-weight:bold;color:#1f2937;}
+    .info-value{color:#111827;margin-top:4px;}
+    .price-range{
+      margin-top:15px;
+      font-weight:bold;
+      font-size:1.1em;
+      color:#065f46;
+      background-color:#d1fae5;
+      padding:10px 15px;
+      border-radius:6px;
+      width:100%;
+      text-align:center;
     }
 
-    button {
-      margin-top: 15px;
-      background-color: #b71c1c;
-      border: none;
-      color: white;
-      padding: 10px 18px;
-      font-size: 1em;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.2s;
+    /* Errors */
+    #errorMessage{
+      display:none;
+      margin-top:20px;
+      background-color:#fee2e2;
+      padding:15px 20px;
+      border-radius:6px;
+      color:#b91c1c;
+      white-space:pre-line;
     }
+    #errorMessage.active{display:block;}
 
-    button:hover {
-      background-color: #8e1515;
+    /* History section */
+    #historyList{display:flex;flex-direction:column;gap:10px;margin-top:10px;}
+    .history-item{
+      cursor:pointer;
+      padding:10px 15px;
+      border-radius:6px;
+      background:#f9fafb;
+      border-left:4px solid var(--italian-red);
+      transition:background-color 0.2s;
     }
-
-    #errorMessage {
-      display: none;
-      margin-top: 20px;
-      background-color: #fee2e2;
-      padding: 15px 20px;
-      border-radius: 6px;
-      color: #b91c1c;
-      white-space: pre-line;
-    }
-    #errorMessage.active { display: block; }
-
-    /* History section styling */
-    #historyList {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .history-item {
-      cursor: pointer;
-      padding: 10px 15px;
-      border-radius: 6px;
-      background: #f9fafb;
-      border-left: 4px solid #b71c1c;
-      transition: background-color 0.2s;
-    }
-    .history-item:hover { background-color: #f3f4f6; }
-    .history-vin { font-weight: bold; color: #1f2937; }
-    .history-meta { font-size: 0.9em; color: #6b7280; }
+    .history-item:hover{background-color:#f3f4f6;}
+    .history-vin{font-weight:bold;color:#1f2937;}
+    .history-meta{font-size:0.9em;color:#6b7280;}
   </style>
 </head>
 <body>
-  
-  <!-- Italian-style branding -->
-  <h1 id="appTitle">Yanni Pricing</h1>
-  <div id="appSubtitle">Decodifica del VIN e prezzi stimati dei veicoli</div>
 
-  <!-- Upload Section -->
-<div id="uploadSection">
-  <p>Select a photo of a Vehicle Identification Number (VIN):</p>
-
-  <!-- The visible custom button -->
-  <label id="customUpload">
-    📸 Upload a file or take a picture
-    <input type="file" id="fileInput" accept="image/*" capture="environment" />
-  </label>
-</div>
-
-  <!-- Preview Section -->
-  <div id="previewSection">
-    <img id="previewImg" alt="Image preview" />
-    <div id="loading">Processing VIN... ⏳</div>
-    <button onclick="reset()">🔁 Upload another image</button>
+  <!-- ---------- Heading ---------- -->
+  <h1 id="appTitle">
+    <span class="brand-line">Yanni</span><br>
+    <span class="brand-line">Pricing</span>
+  </h1>
+  <div id="appSubtitle">
+    Decodifica del VIN e prezzi stimati dei veicoli
   </div>
 
-  <!-- Results Section -->
+  <!-- ---------- Upload Section ---------- -->
+  <div id="uploadSection">
+    <p>Upload an image containing a Vehicle Identification Number (VIN):</p>
+    <label id="customUpload">
+      📸 Upload a file or take a picture
+      <input type="file" id="fileInput" accept="image/*">
+    </label>
+  </div>
+
+  <!-- ---------- Preview Section ---------- -->
+  <div id="previewSection">
+    <img id="previewImg" alt="Preview">
+    <div id="loading">Processing VIN... ⏳</div>
+    <button class="secondary-btn" onclick="reset()">🔁 Upload another image</button>
+  </div>
+
+  <!-- ---------- Results Section ---------- -->
   <div id="resultsSection">
     <div id="vinNumber"></div>
     <div id="vehicleDetails"></div>
-    <button onclick="reset()">🔁 Decode another VIN</button>
+    <button id="decodeAnotherBtn" class="secondary-btn" style="display:none;">🔁 Decode another VIN</button>
   </div>
 
-  <!-- Error Message -->
+  <!-- ---------- Error Message ---------- -->
   <div id="errorMessage"></div>
 
-  <!-- History Section -->
+  <!-- ---------- History Section ---------- -->
   <div id="historySection">
-    <h2>📜 Scan History</h2>
+    <h2>📜 Scan History</h2>
     <div id="historyList">No previous scans yet.</div>
   </div>
 
+  <!-- ---------- JavaScript ---------- -->
   <script>
-    // existing JS from your working version goes here unchanged
-    // (handleFile, resizeImageIfNeeded, processImage, displayResults, saveToHistory, renderHistory, etc.)
+    const fileInput=document.getElementById('fileInput');
+    const uploadSection=document.getElementById('uploadSection');
+    const previewSection=document.getElementById('previewSection');
+    const previewImg=document.getElementById('previewImg');
+    const loading=document.getElementById('loading');
+    const resultsSection=document.getElementById('resultsSection');
+    const errorMessage=document.getElementById('errorMessage');
+    const historyList=document.getElementById('historyList');
+    const decodeAnotherBtn=document.getElementById('decodeAnotherBtn');
+
+    // When user selects image
+    fileInput.addEventListener('change', e=>{
+      const file=e.target.files[0];
+      if(file) handleFile(file);
+    });
+
+    function handleFile(file){
+      const reader=new FileReader();
+      reader.onload=async e=>{
+        const originalDataUrl=e.target.result;
+        previewImg.src=originalDataUrl;
+        uploadSection.style.display='none';
+        previewSection.classList.add('active');
+        loading.classList.add('active');
+        errorMessage.classList.remove('active');
+        const resized=await resizeImageIfNeeded(originalDataUrl);
+        processImage(resized);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Resize image if >5MB
+    const MAX_IMAGE_BYTES=4.5*1024*1024;
+    function resizeImageIfNeeded(dataUrl,maxBytes=MAX_IMAGE_BYTES){
+      return new Promise(resolve=>{
+        const est=Math.ceil((dataUrl.length*3)/4);
+        if(est<=maxBytes)return resolve(dataUrl);
+        const img=new Image();
+        img.onload=()=>{
+          const canvas=document.createElement('canvas');
+          const ctx=canvas.getContext('2d');
+          const scale=Math.sqrt(maxBytes/est);
+          canvas.width=img.width*scale;
+          canvas.height=img.height*scale;
+          ctx.drawImage(img,0,0,canvas.width,canvas.height);
+          const newUrl=canvas.toDataURL('image/jpeg',0.7);
+          resolve(newUrl);
+        };
+        img.onerror=()=>resolve(dataUrl);
+        img.src=dataUrl;
+      });
+    }
+
+    async function processImage(imageData){
+      try{
+        const response=await fetch('/api/decode-vin',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({image:imageData})
+        });
+        if(!response.ok){
+          const err=await response.json();
+          throw new Error(err.error||`Server error: ${response.status}`);
+        }
+        const result=await response.json();
+        if(result.success){
+          displayResults(result.vin,result.details);
+          saveToHistory(result.vin,result.details);
+        }else{
+          throw new Error(result.error||'Failed to decode VIN');
+        }
+      }catch(err){
+        showError('Failed to decode VIN: '+err.message);
+        loading.classList.remove('active');
+      }
+    }
+
+    /* ---------- displayResults() ---------- */
+    function displayResults(vin,details){
+      loading.classList.remove('active');
+      document.getElementById('vinNumber').textContent=vin;
+      const grid=document.getElementById('vehicleDetails');
+      grid.innerHTML=Object.entries(details)
+        .filter(([k,v])=>v&&v!=='Not Applicable')
+        .map(([k,v])=>`
+          <div class="info-item">
+            <div class="info-label">${k}</div>
+            <div class="info-value">${v}</div>
+          </div>`).join('');
+      if(details["Estimated Used Price"]){
+        grid.insertAdjacentHTML('beforeend',`
+          <div class="price-range">💰 Estimated Used Price: ${details["Estimated Used Price"]}</div>`);
+      }
+      resultsSection.classList.add('active');
+      decodeAnotherBtn.style.display='inline-block'; // show after decode
+    }
+
+    function saveToHistory(vin,details){
+      const history=JSON.parse(localStorage.getItem('vinHistory')||'[]');
+      history.unshift({vin,details,timestamp:new Date().toLocaleString()});
+      localStorage.setItem('vinHistory',JSON.stringify(history));
+      renderHistory();
+    }
+
+    function renderHistory(){
+      const history=JSON.parse(localStorage.getItem('vinHistory')||'[]');
+      if(!history.length){historyList.innerHTML='No previous scans yet.';return;}
+      historyList.innerHTML=history.map((item,i)=>`
+        <div class="history-item" onclick="loadFromHistory(${i})">
+          <div class="history-vin">${item.vin}</div>
+          <div class="history-meta">${item.details.Make||'Unknown'} - ${item.details.Model||'Unknown'} (${item.timestamp})</div>
+        </div>`).join('');
+    }
+
+    function loadFromHistory(i){
+      const history=JSON.parse(localStorage.getItem('vinHistory')||'[]');
+      const item=history[i];
+      if(!item)return;
+      reset(false);
+      displayResults(item.vin,item.details);
+    }
+
+    function showError(msg){
+      errorMessage.textContent=msg;
+      errorMessage.classList.add('active');
+    }
+
+    function reset(clearPreview=true){
+      uploadSection.style.display='block';
+      previewSection.classList.remove('active');
+      resultsSection.classList.remove('active');
+      errorMessage.classList.remove('active');
+      decodeAnotherBtn.style.display='none';
+      if(clearPreview)fileInput.value='';
+    }
+
+    renderHistory();
   </script>
 
 </body>
