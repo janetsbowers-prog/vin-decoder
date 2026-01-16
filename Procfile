@@ -1,1 +1,1 @@
-web: gunicorn app:ap
+web: gunicorn vin_decoder:app
