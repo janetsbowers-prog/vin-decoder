@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VIN Decoder</title>
-
+  <title>VIN Decoder with History</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,14 +19,14 @@
     }
 
     h1 {
-      margin: 20px 0;
+      margin: 20px 0 10px;
       color: #1f2937;
     }
 
     #uploadSection {
-      margin-top: 30px;
+      margin-top: 20px;
       border: 2px dashed #9ca3af;
-      padding: 40px;
+      padding: 35px;
       border-radius: 10px;
       text-align: center;
       background-color: #fff;
@@ -36,12 +35,12 @@
       transition: background-color 0.2s;
     }
 
-    #uploadSection:hover {
-      background-color: #f3f4f6;
-    }
-
     #fileInput {
       margin-top: 15px;
+    }
+
+    #uploadSection:hover {
+      background-color: #f3f4f6;
     }
 
     #previewSection {
@@ -52,11 +51,9 @@
       width: 100%;
       max-width: 500px;
     }
-
     #previewSection.active {
       display: flex;
     }
-
     #previewImg {
       max-width: 100%;
       border-radius: 8px;
@@ -69,22 +66,7 @@
       font-weight: bold;
       color: #2563eb;
     }
-
     #loading.active {
-      display: block;
-    }
-
-    #errorMessage {
-      display: none;
-      margin-top: 20px;
-      background-color: #fee2e2;
-      padding: 15px 20px;
-      border-radius: 6px;
-      color: #b91c1c;
-      white-space: pre-line;
-    }
-
-    #errorMessage.active {
       display: block;
     }
 
@@ -100,11 +82,9 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       padding: 20px 30px;
     }
-
     #resultsSection.active {
       display: flex;
     }
-
     #vinNumber {
       font-weight: bold;
       font-size: 1.2em;
@@ -119,20 +99,16 @@
       gap: 10px;
       justify-content: flex-start;
     }
-
     .info-item {
       background-color: #f3f4f6;
       border-radius: 6px;
       padding: 10px 15px;
       min-width: 200px;
     }
-
     .info-label {
       font-weight: bold;
-      font-size: 0.9em;
       color: #374151;
     }
-
     .info-value {
       margin-top: 4px;
       color: #111827;
@@ -160,15 +136,61 @@
       border-radius: 5px;
       cursor: pointer;
     }
-
     button:hover {
       background-color: #1d4ed8;
     }
 
+    /* Error Message */
+    #errorMessage {
+      display: none;
+      margin-top: 20px;
+      background-color: #fee2e2;
+      padding: 15px 20px;
+      border-radius: 6px;
+      color: #b91c1c;
+      white-space: pre-line;
+    }
+    #errorMessage.active {
+      display: block;
+    }
+
+    /* History Section */
+    #historySection {
+      margin-top: 25px;
+      width: 90%;
+      max-width: 700px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px 30px;
+    }
+    #historyList {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .history-item {
+      cursor: pointer;
+      padding: 10px 15px;
+      border-radius: 6px;
+      background: #f3f4f6;
+      transition: background-color 0.2s;
+    }
+    .history-item:hover {
+      background-color: #e5e7eb;
+    }
+    .history-vin {
+      font-weight: bold;
+      color: #1f2937;
+    }
+    .history-meta {
+      font-size: 0.9em;
+      color: #6b7280;
+    }
   </style>
 </head>
 <body>
-
   <h1>📷 VIN Decoder</h1>
 
   <!-- Upload Section -->
@@ -194,6 +216,12 @@
   <!-- Error Message -->
   <div id="errorMessage"></div>
 
+  <!-- Scan History Section -->
+  <div id="historySection">
+    <h2>📜 Scan History</h2>
+    <div id="historyList">No previous scans yet.</div>
+  </div>
+
   <script>
     const fileInput = document.getElementById('fileInput');
     const uploadSection = document.getElementById('uploadSection');
@@ -202,12 +230,12 @@
     const loading = document.getElementById('loading');
     const resultsSection = document.getElementById('resultsSection');
     const errorMessage = document.getElementById('errorMessage');
+    const historyList = document.getElementById('historyList');
 
+    // Handle image upload
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
-      if (file) {
-        handleFile(file);
-      }
+      if (file) handleFile(file);
     });
 
     function handleFile(file) {
@@ -218,32 +246,31 @@
         previewSection.classList.add('active');
         loading.classList.add('active');
         errorMessage.classList.remove('active');
-        
         processImage(e.target.result);
       };
       reader.readAsDataURL(file);
     }
 
+    // Process VIN image
     async function processImage(imageData) {
       try {
         const response = await fetch('/api/decode-vin', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ image: imageData })
         });
-        
+
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || `Server error: ${response.status}`);
         }
-        
+
         const result = await response.json();
         console.log('Server response:', result);
-        
+
         if (result.success) {
           displayResults(result.vin, result.details);
+          saveToHistory(result.vin, result.details);
         } else {
           throw new Error(result.error || 'Failed to decode VIN');
         }
@@ -254,21 +281,20 @@
       }
     }
 
+    // Show decoded VIN info
     function displayResults(vin, details) {
       loading.classList.remove('active');
-      
       document.getElementById('vinNumber').textContent = vin;
-      
+
       const detailsGrid = document.getElementById('vehicleDetails');
       detailsGrid.innerHTML = Object.entries(details)
-        .filter(([key, value]) => value && value !== 'Not Applicable')
-        .map(([key, value]) => `
+        .filter(([k, v]) => v && v !== 'Not Applicable')
+        .map(([k, v]) => `
           <div class="info-item">
-            <div class="info-label">${key}</div>
-            <div class="info-value">${value}</div>
+            <div class="info-label">${k}</div>
+            <div class="info-value">${v}</div>
           </div>
-        `)
-        .join('');
+        `).join('');
 
       if (details["Estimated Used Price"]) {
         detailsGrid.insertAdjacentHTML('beforeend', `
@@ -277,8 +303,44 @@
           </div>
         `);
       }
-
       resultsSection.classList.add('active');
+    }
+
+    // Save successful scan to local storage
+    function saveToHistory(vin, details) {
+      const history = JSON.parse(localStorage.getItem('vinHistory') || '[]');
+      const entry = {
+        vin,
+        details,
+        timestamp: new Date().toLocaleString()
+      };
+      history.unshift(entry);
+      localStorage.setItem('vinHistory', JSON.stringify(history));
+      renderHistory();
+    }
+
+    // Show saved history list
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem('vinHistory') || '[]');
+      if (history.length === 0) {
+        historyList.innerHTML = 'No previous scans yet.';
+        return;
+      }
+      historyList.innerHTML = history.map((item, i) => `
+        <div class="history-item" onclick="loadFromHistory(${i})">
+          <div class="history-vin">${item.vin}</div>
+          <div class="history-meta">${item.details.Make || 'Unknown Make'} - ${item.details.Model || 'Unknown Model'} (${item.timestamp})</div>
+        </div>
+      `).join('');
+    }
+
+    // Load a saved VIN result from history
+    function loadFromHistory(index) {
+      const history = JSON.parse(localStorage.getItem('vinHistory') || '[]');
+      const item = history[index];
+      if (!item) return;
+      reset(false);
+      displayResults(item.vin, item.details);
     }
 
     function showError(message) {
@@ -286,14 +348,17 @@
       errorMessage.classList.add('active');
     }
 
-    function reset() {
+    // Reset screen (optional clear results)
+    function reset(clearPreview = true) {
       uploadSection.style.display = 'block';
       previewSection.classList.remove('active');
       resultsSection.classList.remove('active');
       errorMessage.classList.remove('active');
-      fileInput.value = '';
+      if (clearPreview) fileInput.value = '';
     }
-  </script>
 
+    // Initialize history on load
+    renderHistory();
+  </script>
 </body>
 </html>
