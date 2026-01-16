@@ -10,13 +10,13 @@ import os
 import anthropic
 import requests
 
-app = Flask(__name__, static_folder='.')
+app = Flask(__name__)
 CORS(app)
 
 @app.route('/')
 def index():
-    """Serve the main HTML page"""
-    return send_from_directory('.', 'vin_decoder.html')
+    # Serve HTML file at root
+    return send_from_directory('.', 'vin-decoder.html')
 
 @app.route('/api/decode-vin', methods=['POST'])
 def decode_vin():
