@@ -60,9 +60,33 @@
       box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     }
 
-    #fileInput {
-      margin-top: 15px;
-    }
+    /* Hide the raw input */
+#fileInput {
+  display: none;
+}
+
+/* Styled label that acts as the upload button */
+#customUpload {
+  display: inline-block;
+  background-color: #b71c1c;
+  color: #fff;
+  font-size: 1.05rem;
+  padding: 12px 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.25s, transform 0.15s;
+  font-weight: 600;
+}
+
+#customUpload:hover {
+  background-color: #8e1515;
+  transform: translateY(-1px);
+}
+
+#customUpload:active {
+  background-color: #a32020;
+  transform: translateY(0);
+}
 
     #previewSection,
     #resultsSection,
@@ -176,10 +200,15 @@
   <div id="appSubtitle">Decodifica del VIN e prezzi stimati dei veicoli</div>
 
   <!-- Upload Section -->
-  <div id="uploadSection">
-    <p>Upload an image containing a Vehicle Identification Number (VIN):</p>
-    <input type="file" id="fileInput" accept="image/*" />
-  </div>
+<div id="uploadSection">
+  <p>Select a photo of a Vehicle Identification Number (VIN):</p>
+
+  <!-- The visible custom button -->
+  <label id="customUpload">
+    📸 Upload a file or take a picture
+    <input type="file" id="fileInput" accept="image/*" capture="environment" />
+  </label>
+</div>
 
   <!-- Preview Section -->
   <div id="previewSection">
