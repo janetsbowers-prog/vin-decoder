@@ -248,7 +248,17 @@
             margin-bottom: 2rem;
             text-align: center;
         }
-
+        .price-range {
+          border: 1px solid #32CD32; /* bright lime green outline */
+          background-color: rgba(50, 205, 50, 0.1); /* soft green tint */
+          border-radius: 6px;
+          padding: 10px 12px;
+          margin-top: 8px;
+          text-align: center;
+          font-weight: 600;
+          font-size: 1.1em;
+          color: #5ef15e;
+        }
         .error-message.active {
             display: block;
         }
@@ -311,6 +321,21 @@
         const resultsSection = document.getElementById('resultsSection');
         const errorMessage = document.getElementById('errorMessage');
 
+        const vehicleDetails = `
+          <div class="vehicle-table">
+            <div>MAKE <strong>${data.details.Make}</strong></div>
+            <div>MODEL <strong>${data.details.Model}</strong></div>
+            <div>YEAR <strong>${data.details.Year}</strong></div>
+            <div>DRIVE TYPE <strong>${data.details["Drive Type"]}</strong></div>
+            <div>ENGINE <strong>${data.details["Engine (L)"]}</strong></div>
+            <div>MANUFACTURED IN <strong>${data.details["Manufactured In"]}</strong></div>
+            <div>AGE <strong>${data.details.Age}</strong></div>
+          </div>
+          <div class="price-range">
+            💰 Estimated Used Price: ${data.details["Estimated Used Price"]}
+          </div>
+        `;
+document.getElementById("vehicle-results").innerHTML = vehicleDetails;
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
