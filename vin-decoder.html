@@ -150,13 +150,27 @@ function readVINImage(file){
 /* SIMULATE / CALL ACTUAL API */
 async function decodeVIN(imgData){
   try{
-    // 🔹 call your real endpoint here
-    // const res=await fetch('/api/decode-vin',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:imgData})});
-    // const data=await res.json();
+   async function decodeVIN(imgData){
+  try {
+    const res = await fetch('/api/decode-vin', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: imgData })
+    });
 
-    // Mock result for demo
-    const mockVIN="TESTVIN"+Math.floor(Math.random()*100000);
-    const data={success:true,vin:mockVIN,details:{Make:'FIAT',Model:'500',Year:'2021',Color:'Red', 'Estimated Used Price':'$14,500'}};
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error || `Server error: ${res.status}`);
+    }
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error || 'Failed to decode VIN');
+
+    handleDecoded(data.vin, data.details);
+  } catch (err) {
+    showError('Failed to decode VIN: ' + err.message);
+  }
+}
 
     if(!data.success) throw new Error(data.error || 'Failed to decode VIN');
     handleDecoded(data.vin,data.details);
