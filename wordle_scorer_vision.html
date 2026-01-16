@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Score Calculator - AI Vision</title>
+    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@700;900&family=Karla:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wordle-green: #6aaa64;
+            --wordle-yellow: #c9b458;
+            --wordle-gray: #787c7e;
+            --wordle-darkgray: #3a3a3c;
+            --bg-primary: #121213;
+            --bg-secondary: #1a1a1b;
+            --text-primary: #ffffff;
+            --text-secondary: #d7dadc;
+            --accent: #56b4e9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Karla', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1rem;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(106, 170, 100, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(201, 180, 88, 0.08) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            border-bottom: 3px solid var(--wordle-green);
+            padding-bottom: 2rem;
+        }
+
+        h1 {
+            font-family: 'Frank Ruhl Libre', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--wordle-green), var(--wordle-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .upload-section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 2px dashed var(--wordle-gray);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .upload-section.drag-over {
+            border-color: var(--wordle-green);
+            background: rgba(106, 170, 100, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.6;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--wordle-green), #538d4e);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Karla', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(106, 170, 100, 0.3);
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(106, 170, 100, 0.4);
+        }
+
+        .preview-section {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        .preview-section.active {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .preview-img {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 2px solid var(--wordle-darkgray);
+            margin-bottom: 1rem;
+            background: var(--bg-secondary);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--wordle-gray);
+            border-top-color: var(--wordle-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .results-section {
+            display: none;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 2px solid var(--wordle-green);
+        }
+
+        .results-section.active {
+            display: block;
+            animation: slideIn 0.4s ease-out;
+        }
+
+        .total-score {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(106, 170, 100, 0.2), rgba(201, 180, 88, 0.2));
+            border-radius: 12px;
+        }
+
+        .score-label {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-value {
+            font-family: 'Frank Ruhl Libre', serif;
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--wordle-green);
+        }
+
+        .breakdown-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+        }
+
+        .letter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.75rem;
+            background: var(--bg-primary);
+            border-radius: 8px;
+            border-left: 4px solid var(--wordle-green);
+            transition: transform 0.2s ease;
+        }
+
+        .letter-row:hover {
+            transform: translateX(4px);
+        }
+
+        .letter-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .letter-char {
+            font-family: 'Frank Ruhl Libre', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            background: var(--wordle-green);
+            color: white;
+        }
+
+        .letter-char.yellow {
+            background: var(--wordle-yellow);
+        }
+
+        .letter-details {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .letter-points {
+            font-family: 'Frank Ruhl Libre', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--wordle-green);
+        }
+
+        .reset-btn {
+            width: 100%;
+            margin-top: 2rem;
+            background: var(--wordle-darkgray);
+            color: white;
+            border: none;
+            padding: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Karla', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: var(--wordle-gray);
+        }
+
+        .error-message {
+            display: none;
+            background: #d32f2f;
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            text-align: center;
+            animation: shake 0.5s ease;
+        }
+
+        .error-message.active {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .debug-info {
+            background: rgba(86,180,233,0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+            .upload-section { padding: 2rem 1.5rem; }
+            .score-value { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WORDLE SCORER</h1>
+            <p class="subtitle">AI-Powered Score Calculator</p>
+            <div class="ai-badge">✨ Powered by Claude Vision</div>
+        </header>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-icon">📸</div>
+            <p class="upload-text">Upload or snap your Wordle screenshot</p>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                Choose Image
+            </button>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <div class="preview-section" id="previewSection">
+            <img id="previewImg" class="preview-img" alt="Preview">
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>AI is analyzing your Wordle...</p>
+        </div>
+
+        <div class="results-section" id="resultsSection">
+            <div class="total-score">
+                <div class="score-label">Total Score</div>
+                <div class="score-value" id="totalScore">0</div>
+            </div>
+
+            <div class="breakdown-title">Letter Breakdown</div>
+            <div id="letterBreakdown"></div>
+
+            <button class="reset-btn" onclick="reset()">Score Another</button>
+        </div>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const uploadSection = document.getElementById('uploadSection');
+        const previewSection = document.getElementById('previewSection');
+        const previewImg = document.getElementById('previewImg');
+        const loading = document.getElementById('loading');
+        const resultsSection = document.getElementById('resultsSection');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Drag and drop
+        uploadSection.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadSection.classList.add('drag-over');
+        });
+
+        uploadSection.addEventListener('dragleave', () => {
+            uploadSection.classList.remove('drag-over');
+        });
+
+        uploadSection.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadSection.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                uploadSection.style.display = 'none';
+                previewSection.classList.add('active');
+                loading.classList.add('active');
+                errorMessage.classList.remove('active');
+                
+                processImage(e.target.result);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processImage(imageData) {
+            try {
+                const response = await fetch('/api/score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ image: imageData })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    displayResults(result);
+                } else {
+                    showError(result.error || 'Failed to process image');
+                    loading.classList.remove('active');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Failed to connect to server. ' + error.message);
+                loading.classList.remove('active');
+            }
+        }
+
+        function displayResults(result) {
+            loading.classList.remove('active');
+            
+            document.getElementById('totalScore').textContent = result.totalScore;
+            
+            const breakdown = document.getElementById('letterBreakdown');
+            let html = result.letters.map(letter => {
+                const colorClass = letter.color === 'yellow' ? 'yellow' : '';
+                const conversionText = letter.conversion ? ' + 1 conversion' : '';
+                
+                return `
+                    <div class="letter-row">
+                        <div class="letter-info">
+                            <div class="letter-char ${colorClass}">${letter.char}</div>
+                            <div class="letter-details">
+                                Row ${letter.row} ${letter.color}${conversionText}
+                            </div>
+                        </div>
+                        <div class="letter-points">${letter.totalPoints}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            if (result.debug && result.debug.rows) {
+                html += `
+                    <div class="debug-info">
+                        <strong>🔍 Detected Words:</strong><br>
+                        ${result.debug.rows.map((word, i) => `Row ${i+1}: ${word}`).join('<br>')}
+                    </div>
+                `;
+            }
+            
+            breakdown.innerHTML = html;
+            resultsSection.classList.add('active');
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('active');
+        }
+
+        function reset() {
+            uploadSection.style.display = 'block';
+            previewSection.classList.remove('active');
+            resultsSection.classList.remove('active');
+            errorMessage.classList.remove('active');
+            fileInput.value = '';
+        }
+    </script>
+</body>
+</html>
