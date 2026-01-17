@@ -63,6 +63,33 @@ border-radius:6px;padding:10px 15px;gap:10px;}
 .history-text{flex:1;}
 .history-vin{font-weight:700;}
 .history-meta{font-size:.9em;color:#6b7280;}
+
+/* LOADING SPINNER */
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--italian-red);
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+#loadingSpinner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255,255,255,0.95);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
 </head>
 <body>
@@ -105,6 +132,14 @@ border-radius:6px;padding:10px 15px;gap:10px;}
 <!-- ERROR -->
 <div id="errorMessage"></div>
 
+<!-- LOADING SPINNER -->
+<div id="loadingSpinner" style="display:none;">
+  <div style="text-align:center;padding:40px;">
+    <div class="spinner"></div>
+    <p style="margin-top:20px;color:#666;font-size:1.1rem;">🔍 Decoding VIN and searching databases...</p>
+  </div>
+</div>
+
 <!-- 3️⃣ History -->
 <div id="historySection" class="panel">
   <h2>📜 Scan History</h2>
@@ -129,6 +164,7 @@ const carUpload=document.getElementById('carUpload');
 const scanAnotherBtn=document.getElementById('scanAnotherBtn');
 const historyList=document.getElementById('historyList');
 const errorMessage=document.getElementById('errorMessage');
+const loadingSpinner=document.getElementById('loadingSpinner');
 
 /* UPLOAD VIN */
 fileInput.addEventListener('change',e=>{
@@ -149,6 +185,7 @@ function readVINImage(file){
 
 /* SIMULATE / CALL ACTUAL API */
 async function decodeVIN(imgData){
+  loadingSpinner.style.display='flex'; // Show spinner
   try {
     const res = await fetch('/api/decode-vin', {
       method: 'POST',
@@ -164,8 +201,10 @@ async function decodeVIN(imgData){
     const data = await res.json();
     if (!data.success) throw new Error(data.error || 'Failed to decode VIN');
 
+    loadingSpinner.style.display='none'; // Hide spinner
     handleDecoded(data.vin, data.details);
   } catch (err) {
+    loadingSpinner.style.display='none'; // Hide spinner on error
     showError('Failed to decode VIN: ' + err.message);
   }
 }
@@ -224,6 +263,7 @@ function showCarUpload(wants){
     carUpload.style.display='block';
   }else{
     finalizeScan('No pic given');
+    scanAnotherBtn.style.display='inline-block'; // Show scan another button
   }
 }
 
@@ -236,6 +276,7 @@ carFileInput.addEventListener('change',e=>{
       carImgPreview.src=currentCarImg;
       carImgPreview.style.display='block';
       finalizeScan(currentCarImg);
+      scanAnotherBtn.style.display='inline-block'; // Show scan another button
     };
     reader.readAsDataURL(file);
   }
@@ -244,7 +285,7 @@ carFileInput.addEventListener('change',e=>{
 /* FINALIZE */
 function finalizeScan(carImgOrNone){
   saveEntry(currentVIN,currentDetails,carImgOrNone);
-  scanAnotherBtn.style.display='inline-block';
+  // scanAnotherBtn is now shown by the caller
 }
 
 /* HISTORY FUNCTIONS */
