@@ -280,16 +280,39 @@ function loadHistory(i){
   const item=h[i]; if(!item)return;
   uploadSection.style.display='none';
   resultsSection.style.display='block';
+  
+  // Hide VIN preview since we don't store it in history
+  previewImg.style.display='none';
+  
   vinNumber.textContent=item.vin;
-  vehicleDetails.innerHTML=Object.entries(item.details)
-    .map(([k,v])=>`<div class="info-item"><strong>${k}: </strong>${v}</div>`).join('');
+  
+  // Prioritize Make & Model first (same as handleDecoded)
+  const orderedFields = ['Make', 'Model'];
+  let html = '';
+  
+  orderedFields.forEach(field => {
+    if(item.details[field]) {
+      html += `<div class="info-item"><strong>${field}: </strong>${item.details[field]}</div>`;
+    }
+  });
+  
+  Object.entries(item.details).forEach(([k,v]) => {
+    if(!orderedFields.includes(k)) {
+      html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
+    }
+  });
+  
+  vehicleDetails.innerHTML = html;
+  
   if(item.carImg && item.carImg!=='No pic given'){
     carUpload.style.display='block';
     carImgPreview.src=item.carImg;
     carImgPreview.style.display='block';
   }else{
     carUpload.style.display='none';
+    carImgPreview.style.display='none';
   }
+  carOption.style.display='none';
   scanAnotherBtn.style.display='inline-block';
 }
 function deleteHistory(i){
