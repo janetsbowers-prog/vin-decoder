@@ -147,10 +147,9 @@ function readVINImage(file){
   r.readAsDataURL(file);
 }
 
+
 /* SIMULATE / CALL ACTUAL API */
 async function decodeVIN(imgData){
-  try{
-   async function decodeVIN(imgData){
   try {
     const res = await fetch('/api/decode-vin', {
       method: 'POST',
