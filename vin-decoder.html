@@ -149,6 +149,7 @@ function readVINImage(file){
 
 
 /* SIMULATE / CALL ACTUAL API */
+/* SIMULATE / CALL ACTUAL API */
 async function decodeVIN(imgData){
   try {
     const res = await fetch('/api/decode-vin', {
@@ -171,10 +172,8 @@ async function decodeVIN(imgData){
   }
 }
 
-    if(!data.success) throw new Error(data.error || 'Failed to decode VIN');
-    handleDecoded(data.vin,data.details);
-  }catch(err){showError(err.message);}
-}
+/* AFTER DECODE */
+function handleDecoded(vin,details){
 
 /* AFTER DECODE */
 function handleDecoded(vin,details){
