@@ -99,6 +99,17 @@ def decode_vin():
         manufactured_in = f"{vin_data.get('PlantCity', '')} {vin_data.get('PlantCountry', '')}".strip()
         vehicle_type = vin_data.get('VehicleType', 'Unknown')
         body_class = vin_data.get('BodyClass', 'Unknown')
+        
+        # Check for title brand / salvage indicators
+        error_code = vin_data.get('ErrorCode', '')
+        error_text = vin_data.get('ErrorText', '')
+        
+        # Some title information may be available
+        title_status = 'Unknown'
+        if 'salvage' in error_text.lower() or 'rebuilt' in error_text.lower():
+            title_status = '⚠️ Possible Salvage/Rebuilt'
+        elif error_code == '0':
+            title_status = 'No Issues Found in VIN Decode'
 
         # --- Step 3: Compute vehicle age ---
         current_year = datetime.now().year
@@ -119,7 +130,9 @@ def decode_vin():
             "Vehicle Type": vehicle_type,
             "Body Class": body_class,
             "Age": age,
-            "Estimated Used Price": est_price
+            "Title Status": title_status,
+            "Estimated Used Price": est_price,
+            "Check Accident History": f"https://www.nicb.org/vincheck (VIN: {vin})"
         }
 
         # --- Step 5: Save record to history ---
