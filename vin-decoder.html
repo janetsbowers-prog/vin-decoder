@@ -126,6 +126,13 @@ border-radius:6px;padding:10px 15px;gap:10px;}
     <img id="carImgPreview" style="display:none;" alt="Car preview">
   </div>
 
+  <!-- Add to History prompt -->
+  <div id="historyPrompt" style="text-align:center;display:none;margin-top:15px;">
+    <p>Add this scan to your history?</p>
+    <button class="secondary-btn" onclick="saveToHistory(true)">Yes, Save It</button>
+    <button class="secondary-btn" onclick="saveToHistory(false)">No, Skip It</button>
+  </div>
+
   <button id="scanAnotherBtn" class="secondary-btn" style="display:none;" onclick="reset()">🔁 Scan another VIN</button>
 </div>
 
@@ -142,7 +149,10 @@ border-radius:6px;padding:10px 15px;gap:10px;}
 
 <!-- 3️⃣ History -->
 <div id="historySection" class="panel">
-  <h2>📜 Scan History</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <h2 style="margin:0;">📜 Scan History</h2>
+    <button class="secondary-btn" style="background-color:#b91c1c;margin:0;" onclick="deleteAllHistory()">🗑️ Delete All History</button>
+  </div>
   <div id="historyList">No previous scans yet.</div>
 </div>
 
@@ -161,6 +171,7 @@ const vinNumber=document.getElementById('vinNumber');
 const vehicleDetails=document.getElementById('vehicleDetails');
 const carOption=document.getElementById('carOption');
 const carUpload=document.getElementById('carUpload');
+const historyPrompt=document.getElementById('historyPrompt');
 const scanAnotherBtn=document.getElementById('scanAnotherBtn');
 const historyList=document.getElementById('historyList');
 const errorMessage=document.getElementById('errorMessage');
@@ -262,8 +273,9 @@ function showCarUpload(wants){
   if(wants){
     carUpload.style.display='block';
   }else{
-    finalizeScan('No pic given');
-    scanAnotherBtn.style.display='inline-block'; // Show scan another button
+    // No car photo, so set it and show history prompt
+    currentCarImg='No pic given';
+    historyPrompt.style.display='block';
   }
 }
 
@@ -275,17 +287,22 @@ carFileInput.addEventListener('change',e=>{
       currentCarImg=f.target.result;
       carImgPreview.src=currentCarImg;
       carImgPreview.style.display='block';
-      finalizeScan(currentCarImg);
-      scanAnotherBtn.style.display='inline-block'; // Show scan another button
+      // Show history prompt after car photo is uploaded
+      historyPrompt.style.display='block';
     };
     reader.readAsDataURL(file);
   }
 });
 
-/* FINALIZE */
-function finalizeScan(carImgOrNone){
-  saveEntry(currentVIN,currentDetails,carImgOrNone);
-  // scanAnotherBtn is now shown by the caller
+/* SAVE TO HISTORY */
+function saveToHistory(shouldSave){
+  historyPrompt.style.display='none';
+  
+  if(shouldSave){
+    saveEntry(currentVIN, currentDetails, currentCarImg);
+  }
+  
+  scanAnotherBtn.style.display='inline-block';
 }
 
 /* HISTORY FUNCTIONS */
@@ -357,8 +374,15 @@ function loadHistory(i){
   scanAnotherBtn.style.display='inline-block';
 }
 function deleteHistory(i){
-  if(!confirm('Delete this scan from history?'))return;
-  const h=getHistory(); h.splice(i,1); saveHistory(h); renderHistory();
+  const h=getHistory(); 
+  h.splice(i,1); 
+  saveHistory(h); 
+  renderHistory();
+}
+
+function deleteAllHistory(){
+  saveHistory([]);
+  renderHistory();
 }
 
 /* UTIL */
@@ -372,6 +396,7 @@ function reset(){
   carOption.style.display='none';
   carUpload.style.display='none';
   carImgPreview.style.display='none';
+  historyPrompt.style.display='none';
   scanAnotherBtn.style.display='none';
   errorMessage.classList.remove('active');
   fileInput.value=''; carFileInput.value='';
