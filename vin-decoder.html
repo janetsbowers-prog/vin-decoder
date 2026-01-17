@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Yanni Pricing – VIN Decoder</title>
+<title>Yanni Pricing – VIN Decoder</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
@@ -68,12 +68,12 @@ border-radius:6px;padding:10px 15px;gap:10px;}
 <body>
 
 <h1 id="appTitle"><span class="brand-line">Yanni</span><br><span class="brand-line">Pricing</span></h1>
-<div id="appSubtitle">Decodifica del VIN e prezzi stimati dei veicoli</div>
+<div id="appSubtitle">Decodifica del VIN e prezzi stimati dei veicoli</div>
 
 <!-- 1️⃣ Upload VIN -->
 <div id="uploadSection" class="panel" style="text-align:center;">
-  <p>📸 Upload a VIN picture (file or camera):</p>
-  <label class="upload-btn">Upload VIN Image
+  <p>📸 Upload a VIN picture (file or camera):</p>
+  <label class="upload-btn">Upload VIN Image
     <input type="file" id="fileInput" accept="image/*">
   </label>
 </div>
@@ -93,13 +93,13 @@ border-radius:6px;padding:10px 15px;gap:10px;}
 
   <!-- Car upload -->
   <div id="carUpload" style="display:none;text-align:center;">
-    <label class="secondary-btn">🚗 Upload Car Photo
+    <label class="secondary-btn">🚗 Upload Car Photo
       <input type="file" id="carFileInput" accept="image/*">
     </label>
     <img id="carImgPreview" style="display:none;" alt="Car preview">
   </div>
 
-  <button id="scanAnotherBtn" class="secondary-btn" style="display:none;" onclick="reset()">🔁 Scan another VIN</button>
+  <button id="scanAnotherBtn" class="secondary-btn" style="display:none;" onclick="reset()">🔁 Scan another VIN</button>
 </div>
 
 <!-- ERROR -->
@@ -107,7 +107,7 @@ border-radius:6px;padding:10px 15px;gap:10px;}
 
 <!-- 3️⃣ History -->
 <div id="historySection" class="panel">
-  <h2>📜 Scan History</h2>
+  <h2>📜 Scan History</h2>
   <div id="historyList">No previous scans yet.</div>
 </div>
 
@@ -147,8 +147,6 @@ function readVINImage(file){
   r.readAsDataURL(file);
 }
 
-
-/* SIMULATE / CALL ACTUAL API */
 /* SIMULATE / CALL ACTUAL API */
 async function decodeVIN(imgData){
   try {
@@ -171,9 +169,6 @@ async function decodeVIN(imgData){
     showError('Failed to decode VIN: ' + err.message);
   }
 }
-
-/* AFTER DECODE */
-function handleDecoded(vin,details){
 
 /* AFTER DECODE */
 function handleDecoded(vin,details){
@@ -252,10 +247,10 @@ function renderHistory(){
     <div class="history-item" onclick="loadHistory(${i})">
       ${item.carImg && item.carImg!=='No pic given'
         ? `<img src="${item.carImg}" class="history-thumb">`
-        : `<div style='width:60px;text-align:center;font-size:0.8em;color:#777;'>No pic given</div>`}
+        : `<div style='width:60px;text-align:center;font-size:0.8em;color:#777;'>No pic given</div>`}
       <div class="history-text">
         <div class="history-vin">${item.vin}</div>
-        <div class="history-meta">${item.details.Make||'Unknown'} – ${item.details.Model||'Unknown'} (${item.timestamp})</div>
+        <div class="history-meta">${item.details.Make||'Unknown'} – ${item.details.Model||'Unknown'} (${item.timestamp})</div>
       </div>
       <button class="delete-btn" onclick="deleteHistory(${i});event.stopPropagation();">×</button>
     </div>`).join('');
