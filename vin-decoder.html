@@ -114,8 +114,8 @@ border-radius:6px;padding:10px 15px;gap:10px;}
   <!-- Car prompt -->
   <div id="carOption" style="text-align:center;display:none;margin-top:15px;">
     <p>Do you want to add a photo of this car?</p>
-    <button class="secondary-btn" onclick="showCarUpload(true)">Yes</button>
-    <button class="secondary-btn" onclick="showCarUpload(false)">No</button>
+    <button id="carYesBtn" class="secondary-btn">Yes</button>
+    <button id="carNoBtn" class="secondary-btn">No</button>
   </div>
 
   <!-- Car upload -->
@@ -129,11 +129,11 @@ border-radius:6px;padding:10px 15px;gap:10px;}
   <!-- Add to History prompt -->
   <div id="historyPrompt" style="text-align:center;display:none;margin-top:15px;">
     <p>Add this scan to your history?</p>
-    <button class="secondary-btn" onclick="saveToHistory(true)">Yes, Save It</button>
-    <button class="secondary-btn" onclick="saveToHistory(false)">No, Skip It</button>
+    <button id="saveYesBtn" class="secondary-btn">Yes, Save It</button>
+    <button id="saveNoBtn" class="secondary-btn">No, Skip It</button>
   </div>
 
-  <button id="scanAnotherBtn" class="secondary-btn" style="display:none;" onclick="reset()">🔁 Scan another VIN</button>
+  <button id="scanAnotherBtn" class="secondary-btn" style="display:none;">🔁 Scan another VIN</button>
 </div>
 
 <!-- ERROR -->
@@ -151,7 +151,7 @@ border-radius:6px;padding:10px 15px;gap:10px;}
 <div id="historySection" class="panel">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
     <h2 style="margin:0;">📜 Scan History</h2>
-    <button class="secondary-btn" style="background-color:#b91c1c;margin:0;" onclick="deleteAllHistory()">🗑️ Delete All History</button>
+    <button id="deleteAllBtn" class="secondary-btn" style="background-color:#b91c1c;margin:0;">🗑️ Delete All History</button>
   </div>
   <div id="historyList">No previous scans yet.</div>
 </div>
@@ -181,6 +181,25 @@ const loadingSpinner=document.getElementById('loadingSpinner');
 fileInput.addEventListener('change',e=>{
   const file=e.target.files[0];
   if(file)readVINImage(file);
+});
+
+/* CAR OPTION BUTTONS */
+document.getElementById('carYesBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  showCarUpload(true);
+});
+
+document.getElementById('carNoBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  showCarUpload(false);
+});
+
+document.getElementById('scanAnotherBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  reset();
 });
 
 function readVINImage(file){
@@ -287,19 +306,39 @@ carFileInput.addEventListener('change',e=>{
       currentCarImg=f.target.result;
       carImgPreview.src=currentCarImg;
       carImgPreview.style.display='block';
-      // Show history prompt after car photo is uploaded
+      // Hide the upload button, show history prompt
+      carUpload.querySelector('.secondary-btn').style.display='none';
       historyPrompt.style.display='block';
     };
     reader.readAsDataURL(file);
   }
 });
 
+/* HISTORY PROMPT BUTTONS */
+document.getElementById('saveYesBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  saveToHistory(true);
+});
+
+document.getElementById('saveNoBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  saveToHistory(false);
+});
+
 /* SAVE TO HISTORY */
 function saveToHistory(shouldSave){
   historyPrompt.style.display='none';
   
+  console.log('saveToHistory called with:', shouldSave);
+  console.log('currentVIN:', currentVIN);
+  console.log('currentDetails:', currentDetails);
+  console.log('currentCarImg:', currentCarImg ? 'present' : 'missing');
+  
   if(shouldSave){
     saveEntry(currentVIN, currentDetails, currentCarImg);
+    console.log('Entry saved to history');
   }
   
   scanAnotherBtn.style.display='inline-block';
@@ -313,9 +352,12 @@ function saveHistory(arr){
   localStorage.setItem('vinHistory',JSON.stringify(arr));
 }
 function saveEntry(vin,details,carImg){
+  console.log('saveEntry called with VIN:', vin);
   const h=getHistory();
+  console.log('Current history length:', h.length);
   h.unshift({vin,details,carImg, timestamp:new Date().toLocaleString()});
   saveHistory(h);
+  console.log('New history length:', h.length);
   renderHistory();
 }
 function renderHistory(){
@@ -402,6 +444,13 @@ function reset(){
   fileInput.value=''; carFileInput.value='';
   currentVIN=null; currentDetails=null; currentCarImg=null;
 }
+
+document.getElementById('deleteAllBtn').addEventListener('click', function(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  deleteAllHistory();
+});
+
 renderHistory();
 </script>
 </body>
