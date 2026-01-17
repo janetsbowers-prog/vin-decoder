@@ -284,7 +284,7 @@ function handleDecoded(vin,details){
       else if(k === 'Check Accident History') {
         const vinMatch = v.match(/VIN: ([A-Z0-9]{17})/);
         const vinCode = vinMatch ? vinMatch[1] : '';
-        html += `<div class="info-item"><strong>${k}: </strong><a href="#" onclick="copyVINAndOpenNICB('${vinCode}'); return false;" style="color:#1b7d2b;text-decoration:underline;">NICB VINCheck (Click to copy VIN) ↗</a></div>`;
+        html += `<div class="info-item"><strong>${k}: </strong><a href="#" class="nicb-link" data-vin="${vinCode}" style="color:#1b7d2b;text-decoration:underline;">NICB VINCheck (Tap to copy VIN) ↗</a></div>`;
       }
       else {
         html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
@@ -418,7 +418,7 @@ function loadHistory(i){
       else if(k === 'Check Accident History') {
         const vinMatch = v.match(/VIN: ([A-Z0-9]{17})/);
         const vinCode = vinMatch ? vinMatch[1] : '';
-        html += `<div class="info-item"><strong>${k}: </strong><a href="#" onclick="copyVINAndOpenNICB('${vinCode}'); return false;" style="color:#1b7d2b;text-decoration:underline;">NICB VINCheck (Click to copy VIN) ↗</a></div>`;
+        html += `<div class="info-item"><strong>${k}: </strong><a href="#" class="nicb-link" data-vin="${vinCode}" style="color:#1b7d2b;text-decoration:underline;">NICB VINCheck (Tap to copy VIN) ↗</a></div>`;
       }
       else {
         html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
@@ -493,6 +493,18 @@ document.getElementById('deleteAllBtn').addEventListener('click', function(e) {
   e.preventDefault();
   e.stopPropagation();
   deleteAllHistory();
+});
+
+// Event delegation for dynamically created NICB links
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('nicb-link')) {
+    e.preventDefault();
+    e.stopPropagation();
+    const vin = e.target.getAttribute('data-vin');
+    if (vin) {
+      copyVINAndOpenNICB(vin);
+    }
+  }
 });
 
 renderHistory();
