@@ -88,7 +88,11 @@ def decode_vin():
         vin_data = nhtsa_resp.json().get('Results', [{}])[0]
 
         make = vin_data.get('Make', 'Unknown')
-        model = vin_data.get('Model', 'Unknown')
+        # Try multiple fields for model - NHTSA API can return model in different fields
+        model = (vin_data.get('Model') or 
+                 vin_data.get('ModelName') or 
+                 vin_data.get('Series') or 
+                 'Unknown')
         year = vin_data.get('ModelYear', 'Unknown')
         drive_type = vin_data.get('DriveType', 'Unknown')
         engine = vin_data.get('DisplacementL') or vin_data.get('EngineModel', 'Unknown')
