@@ -176,6 +176,9 @@ function handleDecoded(vin,details){
   currentDetails=details;
   currentCarImg=null;
 
+  // Clear any previous errors
+  errorMessage.classList.remove('active');
+
   // Check for existing VIN
   const history=getHistory();
   const existingIdx=history.findIndex(h=>h.vin===vin);
@@ -190,8 +193,25 @@ function handleDecoded(vin,details){
   resultsSection.style.display='block';
   vinNumber.textContent=vin;
 
-  vehicleDetails.innerHTML=Object.entries(details)
-   .map(([k,v])=>`<div class="info-item"><strong>${k}: </strong>${v}</div>`).join('');
+  // Prioritize Make & Model first
+  const orderedFields = ['Make', 'Model'];
+  let html = '';
+  
+  // Add Make & Model first if they exist
+  orderedFields.forEach(field => {
+    if(details[field]) {
+      html += `<div class="info-item"><strong>${field}: </strong>${details[field]}</div>`;
+    }
+  });
+  
+  // Add remaining fields
+  Object.entries(details).forEach(([k,v]) => {
+    if(!orderedFields.includes(k)) {
+      html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
+    }
+  });
+  
+  vehicleDetails.innerHTML = html;
 
   carOption.style.display='block';
   scanAnotherBtn.style.display='none';
@@ -289,6 +309,7 @@ function reset(){
   carUpload.style.display='none';
   carImgPreview.style.display='none';
   scanAnotherBtn.style.display='none';
+  errorMessage.classList.remove('active');
   fileInput.value=''; carFileInput.value='';
   currentVIN=null; currentDetails=null; currentCarImg=null;
 }
