@@ -273,10 +273,21 @@ function handleDecoded(vin,details){
     }
   });
   
-  // Add remaining fields
+  // Add remaining fields with special handling
   Object.entries(details).forEach(([k,v]) => {
     if(!orderedFields.includes(k)) {
-      html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
+      // Special styling for title status warnings
+      if(k === 'Title Status' && v.includes('⚠️')) {
+        html += `<div class="info-item" style="background:#fee2e2;border-left:3px solid #dc2626;"><strong>${k}: </strong>${v}</div>`;
+      }
+      // Make accident history check clickable
+      else if(k === 'Check Accident History') {
+        const url = v.split(' (VIN:')[0];
+        html += `<div class="info-item"><strong>${k}: </strong><a href="${url}" target="_blank" style="color:#1b7d2b;text-decoration:underline;">NICB VINCheck ↗</a></div>`;
+      }
+      else {
+        html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
+      }
     }
   });
   
@@ -398,7 +409,18 @@ function loadHistory(i){
   
   Object.entries(item.details).forEach(([k,v]) => {
     if(!orderedFields.includes(k)) {
-      html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
+      // Special styling for title status warnings
+      if(k === 'Title Status' && v.includes('⚠️')) {
+        html += `<div class="info-item" style="background:#fee2e2;border-left:3px solid #dc2626;"><strong>${k}: </strong>${v}</div>`;
+      }
+      // Make accident history check clickable
+      else if(k === 'Check Accident History') {
+        const url = v.split(' (VIN:')[0];
+        html += `<div class="info-item"><strong>${k}: </strong><a href="${url}" target="_blank" style="color:#1b7d2b;text-decoration:underline;">NICB VINCheck ↗</a></div>`;
+      }
+      else {
+        html += `<div class="info-item"><strong>${k}: </strong>${v}</div>`;
+      }
     }
   });
   
